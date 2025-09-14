@@ -1,0 +1,10 @@
+echo ".vs/
+bin/
+obj/
+*.user
+*.suo
+*.cache
+*.vsidx
+*.exe
+*.dll
+*.pdb" > .gitignore
