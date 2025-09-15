@@ -1,54 +1,68 @@
-﻿using System;
+using System;
 
-class Number
+public class Fraction
 {
-    public int Value { get; set; }
+    public int Numerator { get; set; }
+    public int Denominator { get; set; }
 
-    public Number(int value)
+    public Fraction(int numerator, int denominator)
     {
-        Value = value;
+        Numerator = numerator;
+        Denominator = denominator;
     }
 
-    public static bool operator ==(Number n1, Number n2)
+    public static bool operator ==(Fraction f1, Fraction f2)
     {
-        if (ReferenceEquals(n1, n2)) return true;
-        if (n1 is null || n2 is null) return false;
-        return n1.Value == n2.Value;
+        if (ReferenceEquals(f1, f2)) return true;
+        if (f1 is null || f2 is null) return false;
+        return f1.Numerator * f2.Denominator == f2.Numerator * f1.Denominator;
     }
 
-    public static bool operator !=(Number n1, Number n2)
+    public static bool operator !=(Fraction f1, Fraction f2)
     {
-        return !(n1 == n2);
+        return !(f1 == f2);
     }
 
     public override bool Equals(object obj)
     {
-        return obj is Number number && Value == number.Value;
+        return obj is Fraction fraction && this == fraction;
     }
 
     public override int GetHashCode()
     {
-        return Value.GetHashCode();
+        return (Numerator, Denominator).GetHashCode();
+    }
+
+    public override string ToString()
+    {
+        return $"{Numerator}/{Denominator}";
     }
 }
 
-class BoolWrapper
+public class UserAccount
 {
-    public bool Value { get; set; }
+    public string Username { get; set; }
+    public bool IsActive { get; set; }
 
-    public BoolWrapper(bool value)
+    public UserAccount(string username, bool isActive)
     {
-        Value = value;
+        Username = username;
+        IsActive = isActive;
     }
 
-    public static bool operator true(BoolWrapper bw)
+    public static bool operator true(UserAccount account)
     {
-        return bw.Value;
+        return account.IsActive;
     }
 
-    public static bool operator false(BoolWrapper bw)
+    public static bool operator false(UserAccount account)
     {
-        return !bw.Value;
+        return !account.IsActive;
+    }
+
+    public static UserAccount operator &(UserAccount left, UserAccount right)
+    {
+        return new UserAccount($"{left.Username}&{right.Username}", left.IsActive && right.IsActive);
     }
 }
 
@@ -56,26 +70,33 @@ class Program
 {
     static void Main(string[] args)
     {
-        Number num1 = new Number(10);
-        Number num2 = new Number(10);
-        Number num3 = new Number(20);
+        var fraction1 = new Fraction(1, 2);
+        var fraction2 = new Fraction(2, 4);
+        var fraction3 = new Fraction(3, 4);
 
-        Console.WriteLine($"num1 == num2: {num1 == num2}");
-        Console.WriteLine($"num1 != num2: {num1 != num2}");
-        Console.WriteLine($"num1 == num3: {num1 == num3}");
-        Console.WriteLine($"num1 != num3: {num1 != num3}");
+        Console.WriteLine($"Дроби {fraction1} == {fraction2}: {fraction1 == fraction2}");
+        Console.WriteLine($"Дроби {fraction1} != {fraction2}: {fraction1 != fraction2}");
+        Console.WriteLine($"Дроби {fraction1} == {fraction3}: {fraction1 == fraction3}");
+        Console.WriteLine($"Дроби {fraction1} != {fraction3}: {fraction1 != fraction3}");
 
-        BoolWrapper trueWrapper = new BoolWrapper(true);
-        BoolWrapper falseWrapper = new BoolWrapper(false);
+        var activeUser = new UserAccount("john_doe", true);
+        var inactiveUser = new UserAccount("jane_smith", false);
 
-        if (trueWrapper)
+        if (activeUser)
         {
-            Console.WriteLine("trueWrapper имеет значение true");
+            Console.WriteLine($"{activeUser.Username} активен");
         }
 
-        if (!falseWrapper)
+        if (inactiveUser)
         {
-            Console.WriteLine("falseWrapper имеет значение false");
+            Console.WriteLine($"{inactiveUser.Username} активен");
         }
+        else
+        {
+            Console.WriteLine($"{inactiveUser.Username} неактивен");
+        }
+
+        var combinedUsers = activeUser & inactiveUser;
+        Console.WriteLine($"Комбинация пользователей: {combinedUsers.Username}, Активен: {combinedUsers.IsActive}");
     }
 }
